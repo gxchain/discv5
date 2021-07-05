@@ -1,6 +1,6 @@
 {
-  "name": "@chainsafe/discv5",
-  "version": "0.6.0",
+  "name": "@gxchain2/discv5",
+  "version": "0.6.1",
   "description": "Discovery V5",
   "main": "lib/index.js",
   "files": [
@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChainSafe/discv5.git"
+    "url": "git+https://github.com/gxchain/discv5.git"
   },
   "keywords": [
     "discovery",
@@ -30,9 +30,9 @@
   "author": "ChainSafe Systems",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ChainSafe/discv5/issues"
+    "url": "https://github.com/gxchain/discv5/issues"
   },
-  "homepage": "https://github.com/ChainSafe/discv5#readme",
+  "homepage": "https://github.com/gxchain/discv5#readme",
   "devDependencies": {
     "@types/bn.js": "^4.11.5",
     "@types/chai": "^4.2.0",
@@ -53,6 +53,10 @@
     "ts-node": "^8.3.0",
     "typescript": "^3.8.3"
   },
+  "contributors": [
+    "David Lan <lanhaoxiang@qq.com> (https://github.com/lanhaoxiang/)",
+    "Samlior <samlior@foxmail.com> (https://github.com/samlior/)"
+  ],
   "dependencies": {
     "base64url": "^3.0.1",
     "bcrypto": "^5.4.0",
