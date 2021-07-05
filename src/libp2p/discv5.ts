@@ -8,6 +8,8 @@ import { createNodeId, ENR } from "../enr";
 import { IDiscv5Config } from "../config";
 import { toBuffer } from "../util";
 
+const defaultLookupInterval = 5 * 1000;
+
 export interface IDiscv5DiscoveryInputOptions extends Partial<IDiscv5Config> {
   /**
    * Local ENR associated with the local libp2p peer id
@@ -28,6 +30,12 @@ export interface IDiscv5DiscoveryInputOptions extends Partial<IDiscv5Config> {
    * Note: this option is handled within libp2p, not within discv5
    */
   enabled: boolean;
+  /**
+   * Lookup interval
+   *
+   * Declared in milliseconds
+   */
+  lookupInterval?: number;
 }
 
 export interface IDiscv5DiscoveryOptions extends IDiscv5DiscoveryInputOptions {
@@ -41,7 +49,8 @@ export class Discv5Discovery extends EventEmitter {
   static tag = "discv5";
 
   public discv5: Discv5;
-  private started: NodeJS.Timer | boolean;
+  private started: boolean;
+  private lookupInterval: number;
 
   constructor(options: IDiscv5DiscoveryOptions) {
     super();
@@ -52,7 +61,8 @@ export class Discv5Discovery extends EventEmitter {
       config: options,
     });
     this.started = false;
-    options.bootEnrs.forEach((bootEnr) => this.discv5.addEnr(bootEnr));
+    this.lookupInterval = options.lookupInterval || defaultLookupInterval;
+    options.bootEnrs.forEach((bootEnr) => this.addEnr(bootEnr));
   }
 
   async start(): Promise<void> {
@@ -85,7 +95,17 @@ export class Discv5Discovery extends EventEmitter {
       for (const enr of enrs) {
         await this.handleEnr(enr);
       }
+
+      await new Promise((r) => setTimeout(r, this.lookupInterval));
     }
+  }
+
+  addEnr(enr: ENRInput): void {
+    const decodedEnr = typeof enr === "string" ? ENR.decodeTxt(enr) : enr;
+    if (decodedEnr.udp === undefined && decodedEnr.udp6 === undefined) {
+      throw new Error("invalid enr, missing udp information");
+    }
+    this.discv5.addEnr(decodedEnr);
   }
 
   handleEnr = async (enr: ENR): Promise<void> => {
