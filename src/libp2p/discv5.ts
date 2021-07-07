@@ -62,7 +62,10 @@ export class Discv5Discovery extends EventEmitter {
     });
     this.started = false;
     this.lookupInterval = options.lookupInterval || defaultLookupInterval;
-    options.bootEnrs.forEach((bootEnr) => this.addEnr(bootEnr));
+    options.bootEnrs.forEach((bootEnr) => {
+      this.addEnr(bootEnr);
+      this.handleEnr(bootEnr);
+    });
   }
 
   async start(): Promise<void> {
@@ -108,14 +111,16 @@ export class Discv5Discovery extends EventEmitter {
     this.discv5.addEnr(decodedEnr);
   }
 
-  handleEnr = async (enr: ENR): Promise<void> => {
-    const multiaddrTCP = enr.getLocationMultiaddr("tcp");
+  handleEnr = async (enr: ENRInput): Promise<void> => {
+    const decodedEnr = typeof enr === "string" ? ENR.decodeTxt(enr) : enr;
+    const multiaddrTCP = decodedEnr.getLocationMultiaddr("tcp");
     if (!multiaddrTCP) {
       return;
     }
+    const multiaddrUDP = decodedEnr.getLocationMultiaddr("udp");
     this.emit("peer", {
-      id: await enr.peerId(),
-      multiaddrs: [multiaddrTCP],
+      id: await decodedEnr.peerId(),
+      multiaddrs: multiaddrUDP ? [multiaddrTCP, multiaddrUDP] : [multiaddrTCP],
     });
   };
 }
