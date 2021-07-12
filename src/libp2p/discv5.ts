@@ -117,10 +117,9 @@ export class Discv5Discovery extends EventEmitter {
     if (!multiaddrTCP) {
       return;
     }
-    const multiaddrUDP = decodedEnr.getLocationMultiaddr("udp");
     this.emit("peer", {
       id: await decodedEnr.peerId(),
-      multiaddrs: multiaddrUDP ? [multiaddrTCP, multiaddrUDP] : [multiaddrTCP],
+      multiaddrs: multiaddrTCP,
     });
   };
 }
