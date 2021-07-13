@@ -119,7 +119,7 @@ export class Discv5Discovery extends EventEmitter {
     }
     this.emit("peer", {
       id: await decodedEnr.peerId(),
-      multiaddrs: multiaddrTCP,
+      multiaddrs: [multiaddrTCP],
     });
   };
 }
